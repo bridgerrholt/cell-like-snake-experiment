@@ -5,7 +5,7 @@
 Player = function(x, y) {
 	this.circles = [];
 	this.circleTotalCount = 0;
-	for (var i = 0; i < 5; ++i) {
+	for (var i = 0; i < 30; ++i) {
 		this.createCircle();
 	}
 };
@@ -18,8 +18,8 @@ Player.prototype.update = function() {
 
 Player.prototype.createCircle = function() {
 	this.circles.push(new Circle(this.circles, this.circleTotalCount,
-		this.circles.length, 10-this.circles.length,
-		5 - this.circles.length*0.0));
+		this.circles.length, 35-this.circles.length,
+		8 - this.circles.length*0.2));
 	++this.circleTotalCount;
 };
 

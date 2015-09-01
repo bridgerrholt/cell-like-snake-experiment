@@ -8,7 +8,11 @@ Circle = function(parentArray, id, index, radius, speedMax) {
 	this.id = id;		// The unique number of this circle.
 	this.index = index;	// This circle's position in the parent array.
 	this.r = radius;
+
+	this.moving = false;
 	this.speedMax = speedMax;
+	this.speed = 0;
+	this.speedAcc = speedMax/60.0;
 
 	if (this.index === 0) {
 		this.x = g_g.mouse.x + g_g.camera.x;
@@ -39,34 +43,66 @@ Circle.prototype.update = function() {
 };
 
 Circle.prototype.move = function() {
-	var targetX;
-	var targetY;
+	var targetX, targetY, targetR;
+
 	if (this.index === 0) {
 		targetX = g_g.mouse.x+g_g.camera.x;
 		targetY = g_g.mouse.y+g_g.camera.y;
 
-		if (pointDis(this.x, this.y, targetX, targetY) <= this.speedMax) {
+		if (pointDis(this.x, this.y, targetX, targetY) <= this.speed) {
 			this.x = targetX;
 			this.y = targetY;
+			this.moving = false;
 		}
 		else {
-			var pos = disDir(this.x, this.y, this.speedMax,
+			var pos = disDir(this.x, this.y, this.speed,
 				pointDir(this.x, this.y, targetX, targetY));
 			this.x = pos.x;
 			this.y = pos.y;
+			this.moving = true;
 		}
 	}
+
 	else {
 		targetX = this.parentArray[this.index-1].x;
 		targetY = this.parentArray[this.index-1].y;
 		targetR = this.parentArray[this.index-1].r;
 
-		if (pointDis(this.x, this.y, targetX, targetY) > this.r+targetR+4) {
-			var pos = disDir(this.x, this.y, this.speedMax,
-				pointDir(this.x, this.y, targetX, targetY));
-			this.x = pos.x;
-			this.y = pos.y;
+		var disToTarget = pointDis(this.x, this.y, targetX, targetY)
+		var radiuses = this.r+targetR;
+
+		if (this.moving) {
+			var setDis = false;
+			var extraDis = radiuses+4;
+			if (disToTarget <= extraDis) {
+				this.moving = false;
+				setDis = true;
+			}
+
+			else {
+				if (disToTarget <= this.speed+extraDis) {
+					this.moving = false;
+					setDis = true;
+				}
+				else {
+					var pos = disDir(this.x, this.y, this.speed,
+						pointDir(this.x, this.y, targetX, targetY));
+					this.x = pos.x;
+					this.y = pos.y;
+				}
+			}
 		}
+
+		else if (disToTarget > radiuses+12) {
+			this.moving = true;
+		}
+	}
+
+	if (this.moving) {
+		this.speedInc(this.speedAcc);
+	}
+	else {
+		this.speedDec(this.speedAcc*2);
 	}
 };
 
@@ -79,4 +115,16 @@ Circle.prototype.draw = function() {
 	g_g.ctx.strokeStyle = "#fff";
 	g_g.ctx.fill();
 	g_g.ctx.stroke();
+};
+
+Circle.prototype.speedInc = function(value) {
+	this.speed += value;
+	if (this.speed > this.speedMax)
+		this.speed = this.speedMax;
+};
+
+Circle.prototype.speedDec = function(value) {
+	this.speed -= value;
+	if (this.speed < 0)
+		this.speed = 0;
 };
