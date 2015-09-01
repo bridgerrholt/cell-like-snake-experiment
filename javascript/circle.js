@@ -45,18 +45,28 @@ Circle.prototype.move = function() {
 		targetX = g_g.mouse.x+g_g.camera.x;
 		targetY = g_g.mouse.y+g_g.camera.y;
 
-		if (pointDis(this.x, this.y, targetX, targetY) >= this.speedMax) {
+		if (pointDis(this.x, this.y, targetX, targetY) <= this.speedMax) {
 			this.x = targetX;
 			this.y = targetY;
 		}
 		else {
 			var pos = disDir(this.x, this.y, this.speedMax,
 				pointDir(this.x, this.y, targetX, targetY));
+			this.x = pos.x;
+			this.y = pos.y;
 		}
 	}
 	else {
-		targetX = parentArray[index-1].x;
-		targetY = parentArray[index-1].y;
+		targetX = this.parentArray[this.index-1].x;
+		targetY = this.parentArray[this.index-1].y;
+		targetR = this.parentArray[this.index-1].r;
+
+		if (pointDis(this.x, this.y, targetX, targetY) > this.r+targetR+4) {
+			var pos = disDir(this.x, this.y, this.speedMax,
+				pointDir(this.x, this.y, targetX, targetY));
+			this.x = pos.x;
+			this.y = pos.y;
+		}
 	}
 };
 
