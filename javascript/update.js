@@ -8,12 +8,14 @@ update = function() {
 
 	if (g_g.imgs.loadedTotal >= g_g.imgs.loadedNeed) {			// if the images are loaded
 		
-		g_g.camera.update();
 
 		var mouseRealX = g_g.mouse.x+g_g.camera.x;
 		var mouseRealY = g_g.mouse.y+g_g.camera.y;
 
 		g_g.player.update();
+
+		
+		g_g.camera.update();
 
 
 

@@ -44,23 +44,23 @@ Circle.prototype.update = function() {
 
 Circle.prototype.move = function() {
 	var targetX, targetY, targetR;
+	var setDis = false;
 
 	if (this.index === 0) {
 		targetX = g_g.mouse.x+g_g.camera.x;
 		targetY = g_g.mouse.y+g_g.camera.y;
 
-		if (pointDis(this.x, this.y, targetX, targetY) <= this.speed) {
-			this.x = targetX;
-			this.y = targetY;
+		if (pointDis(this.x, this.y, targetX, targetY) <= this.speed+this.r+30) {
 			this.moving = false;
 		}
 		else {
-			var pos = disDir(this.x, this.y, this.speed,
-				pointDir(this.x, this.y, targetX, targetY));
-			this.x = pos.x;
-			this.y = pos.y;
 			this.moving = true;
 		}
+
+		var pos = disDir(this.x, this.y, this.speed,
+			pointDir(this.x, this.y, targetX, targetY));
+		this.x = pos.x;
+		this.y = pos.y;
 	}
 
 	else {
@@ -70,10 +70,9 @@ Circle.prototype.move = function() {
 
 		var disToTarget = pointDis(this.x, this.y, targetX, targetY)
 		var radiuses = this.r+targetR;
+		var extraDis = radiuses+4;
 
 		if (this.moving) {
-			var setDis = false;
-			var extraDis = radiuses+4;
 			if (disToTarget <= extraDis) {
 				this.moving = false;
 				setDis = true;
@@ -93,9 +92,24 @@ Circle.prototype.move = function() {
 			}
 		}
 
-		else if (disToTarget > radiuses+12) {
-			this.moving = true;
+		else {
+			if (disToTarget > radiuses+16) 
+				this.moving = true;
+			if (disToTarget <= extraDis) {
+				setDis = true;
+			}
 		}
+	}
+
+
+	if (setDis) {
+		var pos = disDir(this.parentArray[this.index-1].x,
+			this.parentArray[this.index-1].y, extraDis,
+			pointDir(this.parentArray[this.index-1].x,
+				this.parentArray[this.index-1].y, this.x,
+				this.y));
+		this.x = pos.x;
+		this.y = pos.y;
 	}
 
 	if (this.moving) {
@@ -107,8 +121,19 @@ Circle.prototype.move = function() {
 };
 
 Circle.prototype.draw = function() {
+
+	if (this.x-g_g.camera.x+this.r+10 > 0 &&
+		this.x-g_g.camera.x-this.r-10 <= g_g.canvasW &&
+		this.y-g_g.camera.y+this.r+10 > 0 &&
+		this.y-g_g.camera.y-this.r-10 <= g_g.canvasH) {
+			this.drawAtPos(this.x, this.y);
+	}
+
+};
+
+Circle.prototype.drawAtPos = function(x, y) {
 	g_g.ctx.beginPath();
-	g_g.ctx.arc(this.x-g_g.camera.x, this.y-g_g.camera.y, this.r,
+	g_g.ctx.arc(x-g_g.camera.x, y-g_g.camera.y, this.r,
 		0, 2*Math.PI, false);
 
 	g_g.ctx.fillStyle = "#fff";

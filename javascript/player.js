@@ -8,12 +8,17 @@ Player = function(x, y) {
 	for (var i = 0; i < 30; ++i) {
 		this.createCircle();
 	}
+	this.x = x;
+	this.y = y;
 };
 
 Player.prototype.update = function() {
 	for (var i = 0; i < this.circles.length; ++i) {
 		this.circles[i].update();
 	}
+
+	this.x = this.circles[0].x;
+	this.y = this.circles[0].y;
 };
 
 Player.prototype.createCircle = function() {

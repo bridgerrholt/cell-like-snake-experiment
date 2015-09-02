@@ -24,9 +24,7 @@ g_g.thisTick;							// milliseconds of the current update
 g_g.delta;								// the frameRate as compared to 60 FPS (multiply with all speeds)
 g_g.debugText;							// whether or not text for debugging purposes should be drawn
 
-g_g.baseX;								// the main unit for grids
-g_g.baseY;
-
+g_g.bounds = {};						// size of the world
 
 // loadMedia()
 g_g.imgs = {};

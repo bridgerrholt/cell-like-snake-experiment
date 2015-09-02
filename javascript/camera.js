@@ -8,7 +8,8 @@ Camera = function(x, y) {
 };
 
 Camera.prototype.update = function() {
-
+	this.x = g_g.player.x-Math.floor(g_g.canvasW/2);
+	this.y = g_g.player.y-Math.floor(g_g.canvasH/2);
 };
 
 Camera.prototype.draw = function() {
