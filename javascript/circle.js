@@ -74,13 +74,15 @@ Circle.prototype.move = function() {
 
 		if (this.moving) {
 			if (disToTarget <= extraDis) {
-				this.moving = false;
+				if (!this.parentArray[this.index-1].moving)
+					this.moving = false;
 				setDis = true;
 			}
 
 			else {
 				if (disToTarget <= this.speed+extraDis) {
-					this.moving = false;
+					if (!this.parentArray[this.index-1].moving)
+						this.moving = false;
 					setDis = true;
 				}
 				else {
@@ -106,8 +108,8 @@ Circle.prototype.move = function() {
 		var pos = disDir(this.parentArray[this.index-1].x,
 			this.parentArray[this.index-1].y, extraDis,
 			pointDir(this.parentArray[this.index-1].x,
-				this.parentArray[this.index-1].y, this.x,
-				this.y));
+				this.parentArray[this.index-1].y,
+				this.x, this.y));
 		this.x = pos.x;
 		this.y = pos.y;
 	}
@@ -116,7 +118,7 @@ Circle.prototype.move = function() {
 		this.speedInc(this.speedAcc);
 	}
 	else {
-		this.speedDec(this.speedAcc*2);
+		this.speedDec(this.speedAcc);
 	}
 };
 
