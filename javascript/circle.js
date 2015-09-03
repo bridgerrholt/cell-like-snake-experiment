@@ -10,7 +10,7 @@ Circle = function(parentArray, id, index, radius, speedMax) {
 	this.r = radius;
 
 	this.moving = false;
-	this.speedMax = speedMax;
+	this.speedMax = speedMax*g_g.delta;
 	this.speed = 0;
 	this.speedAcc = speedMax/60.0;
 
@@ -64,11 +64,11 @@ Circle.prototype.move = function() {
 	}
 
 	else {
-		targetX = this.parentArray[this.index-1].x;
-		targetY = this.parentArray[this.index-1].y;
+		//targetX = this.parentArray[this.index-1].x;
+		//targetY = this.parentArray[this.index-1].y;
 		targetR = this.parentArray[this.index-1].r;
 
-		var disToTarget = pointDis(this.x, this.y, targetX, targetY)
+		var disToTarget = pointDis(this.x, this.y, this.parentArray[this.index-1].x, this.parentArray[this.index-1].y)
 		var radiuses = this.r+targetR;
 		var extraDis = radiuses+4;
 
@@ -87,7 +87,7 @@ Circle.prototype.move = function() {
 				}
 				else {
 					var pos = disDir(this.x, this.y, this.speed,
-						pointDir(this.x, this.y, targetX, targetY));
+						pointDir(this.x, this.y, this.parentArray[this.index-1].x, this.parentArray[this.index-1].y));
 					this.x = pos.x;
 					this.y = pos.y;
 				}
@@ -105,11 +105,14 @@ Circle.prototype.move = function() {
 
 
 	if (setDis) {
-		var pos = disDir(this.parentArray[this.index-1].x,
+		/*var pos = disDir(this.parentArray[this.index-1].x,
 			this.parentArray[this.index-1].y, extraDis,
 			pointDir(this.parentArray[this.index-1].x,
 				this.parentArray[this.index-1].y,
-				this.x, this.y));
+				this.x, this.y));*/
+		var pos = disDirToPoint(this.parentArray[this.index-1].x,
+			this.parentArray[this.index-1].y, extraDis,
+			this.x, this.y);
 		this.x = pos.x;
 		this.y = pos.y;
 	}

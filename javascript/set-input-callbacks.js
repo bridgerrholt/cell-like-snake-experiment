@@ -126,12 +126,12 @@ setInputCallbacks = function() {
 		g_g.mouse.used = false;
 	};
 
-	$(document).mousewheel(function(e) {
+	/*$(document).mousewheel(function(e) {
 		g_g.mouse.wheel.deltaX = e.deltaX*e.deltaFactor;
 		g_g.mouse.wheel.deltaY = e.deltaY*e.deltaFactor;
 		g_g.mouse.wheel.rawX = e.deltaX;
 		g_g.mouse.wheel.rawY = e.deltaY;
-	});
+	});*/
 
 
 	// gets the moment keys are pressed down

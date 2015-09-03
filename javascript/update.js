@@ -14,7 +14,6 @@ update = function() {
 
 		g_g.player.update();
 
-		
 		g_g.camera.update();
 
 
@@ -24,11 +23,6 @@ update = function() {
 
 		if (g_g.keys.r[g_g.keyMap.q])
 			g_g.showWeights = !g_g.showWeights;
-
-		if (g_g.mouse.buttons.lr) {
-			g_g.makingConnection = false;
-			g_g.connectionSnapped = false;
-		}
 
 		draw();
 	} else {													// if the images are not loaded

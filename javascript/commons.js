@@ -56,6 +56,7 @@ function RgbColor(){}
 function pointDir(){}
 function pointDis(){}
 function disDir(){}
+function disDirToPoint(){}
 function getIfLineIntersectingCircle(){}
 function getIfLineIntersectingLine(){}
 function roundFloat(){}

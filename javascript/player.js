@@ -5,7 +5,7 @@
 Player = function(x, y) {
 	this.circles = [];
 	this.circleTotalCount = 0;
-	for (var i = 0; i < 30; ++i) {
+	for (var i = 0; i < 1; ++i) {
 		this.createCircle();
 	}
 	this.x = x;
@@ -13,7 +13,7 @@ Player = function(x, y) {
 };
 
 Player.prototype.update = function() {
-	for (var i = 0; i < this.circles.length; ++i) {
+	for (var i = 0; i < this.circles.length; i++) {
 		this.circles[i].update();
 	}
 
