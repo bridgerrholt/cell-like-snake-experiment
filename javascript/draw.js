@@ -20,18 +20,20 @@ draw = function() {
 	var offsetY = g_g.camera.y % lineSpacingY;
 
 	for (var i = 0; i < Math.ceil(g_g.canvasW/lineSpacingX)+1; ++i) {
+		var posX = Math.round(i*lineSpacingX-offsetX);
 		g_g.ctx.beginPath();
-		g_g.ctx.moveTo(i*lineSpacingX-offsetX, 0);
-		g_g.ctx.lineTo(i*lineSpacingX-offsetX, g_g.canvasH);
+		g_g.ctx.moveTo(posX, 0);
+		g_g.ctx.lineTo(posX, g_g.canvasH);
 
 		g_g.ctx.strokeStyle = "#444";
 		g_g.ctx.stroke();
 	}
 
 	for (var i = 0; i < Math.ceil(g_g.canvasH/lineSpacingY)+1; ++i) {
+		var posY = Math.round(i*lineSpacingY-offsetY);
 		g_g.ctx.beginPath();
-		g_g.ctx.moveTo(0, i*lineSpacingY-offsetY);
-		g_g.ctx.lineTo(g_g.canvasW, i*lineSpacingY-offsetY);
+		g_g.ctx.moveTo(0, posY);
+		g_g.ctx.lineTo(g_g.canvasW, posY);
 
 		g_g.ctx.strokeStyle = "#444";
 		g_g.ctx.stroke();
