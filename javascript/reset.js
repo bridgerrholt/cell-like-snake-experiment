@@ -4,6 +4,9 @@
 
 reset = function() {
 	g_g.camera = new Camera(0, 0);
-
 	g_g.player = new Player(0, 0);
+
+	g_g.collectableCircleCages.push (
+		new CollectableCircleCage(g_g.collectableCircleCages.length,
+			-400, -400));
 };

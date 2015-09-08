@@ -41,6 +41,8 @@ g_g.camera = {};						// data for the single Camera() instance
 
 g_g.player = {};
 
+g_g.collectableCircleCages = [];
+
 
 
 // objects
@@ -49,6 +51,8 @@ function Imgs(){}
 
 function Circle(){}
 function Player(){}
+function CollectableCircle(){}
+function CollectableCircleCage(){}
 
 function RgbColor(){}
 

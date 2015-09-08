@@ -16,6 +16,9 @@ update = function() {
 
 		g_g.camera.update();
 
+		for (var i = 0; i < g_g.collectableCircleCages.length; i++) {
+			g_g.collectableCircleCages[i].update();
+		}
 
 
 		if (g_g.keys.r[g_g.keyMap.p])
