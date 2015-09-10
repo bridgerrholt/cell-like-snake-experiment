@@ -2,19 +2,27 @@
 	The basic object making up the player.
 */
 
-Circle = function(parentArray, id, index, radius, speedMax) {
+Circle = function(parentArray, id, index, radiusStart, radiusEnd, speedMax, x, y) {
 						// The array containing this circle.
 	this.parentArray = parentArray; 
 	this.id = id;		// The unique number of this circle.
 	this.index = index;	// This circle's position in the parent array.
-	this.r = radius;
+	this.r = radiusStart;
+	this.rEnd = radiusEnd;
+
+	if (this.r < 1)
+		this.r = 1;
 
 	this.moving = false;
 	this.speedMax = speedMax*g_g.delta;
 	this.speed = 0;
 	this.speedAcc = speedMax/60.0;
 
-	if (this.index === 0) {
+	this.x = x;
+	this.y = y;
+
+
+	/*if (this.index === 0) {
 		this.x = g_g.mouse.x + g_g.camera.x;
 		this.y = g_g.mouse.y + g_g.camera.y;
 	}
@@ -35,11 +43,17 @@ Circle = function(parentArray, id, index, radius, speedMax) {
 			this.r+this.parentArray[this.index-1].r+5, dir);
 		this.x = pos.x;
 		this.y = pos.y;
-	}
+	}*/
 };
 
 Circle.prototype.update = function() {
 	this.move();
+
+	if (this.r < this.rEnd) {
+		this.r += 0.2;
+		if (this.r > this.rEnd)
+			this.r = this.rEnd;
+	}
 };
 
 Circle.prototype.move = function() {

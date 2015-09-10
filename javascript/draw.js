@@ -38,13 +38,14 @@ draw = function() {
 		g_g.ctx.strokeStyle = "#444";
 		g_g.ctx.stroke();
 	}
-
-	g_g.player.draw();
-
+	
 	g_g.ctx.restore();
 	for (var i = 0; i < g_g.collectableCircleCages.length; i++) {
 		g_g.collectableCircleCages[i].draw();
 	}
+
+	g_g.player.draw();
+
 
 	g_g.ctx.save();
 	g_g.ctx.translate(0.5, 0.5);

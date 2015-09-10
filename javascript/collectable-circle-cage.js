@@ -18,21 +18,87 @@ CollectableCircleCage = function(id, x, y) {
 	this.circleRadius = this.wHalf-10;
 
 	this.capturePercent = 0.0;
-	this.capturePercentChange = 0.01;
+	this.capturePercentChange = 0.005;
 	this.captureRadius = this.w*4;
+
+	this.sideCircleRadius = this.captureRadius*2+20;
+
 	this.side = 0;
-	this.toSide = 1;
+	this.toSide = 0;
 	this.sideDisplay = this.toSide;
 	this.sidePercent = 0.0;
+	this.sidePercentChange = this.capturePercentChange*2;
+	this.captured = false;
+
+	this.captureShieldPercent = 0.0;
+	this.captureShieldPercentChange = 0.001;
+
+	this.circleContained = true;
+	this.sideReachedZero = false;
 };
 
 CollectableCircleCage.prototype.update = function() {
 
-	if (pointDis(this.x, this.y, g_g.player.x, g_g.player.y) < this.captureRadius) {
-		this.capturePercentInc(this.capturePercentChange);
-		this.sidePercentInc(this.capturePercentChange*2, this.toSide);
+	if (this.sidePercent < 1.0) {
+		this.captured = false;
+	}
+	
+	this.sideReachedZero = false;
+
+
+	if (this.sidePercent >= 1.0 && this.capturePercent >= 1.0) {
+		this.captured = true;
+
+		if (this.circleContained) {
+			this.circleContained = false;
+			g_g.player.addCircle(this.x, this.y, this.circleRadius);
+		}
 	}
 
+
+
+	var sideGoodAmount = 0;
+	var sideBadAmount = 0;
+	var side = 0;
+	var containsObjects = false;
+
+	if (pointDis(this.x, this.y, g_g.player.x, g_g.player.y) < this.captureRadius) {
+		sideGoodAmount++;
+		containsObjects = true;
+	}
+
+	if (g_g.keys.d[g_g.keyMap.t]) {				// Replace with checks to bad guys.
+		sideBadAmount++;
+		containsObjects = true;
+	}
+
+	if (sideGoodAmount == 0 && sideBadAmount > 0) {
+		side = 2;
+	}
+	else if (sideBadAmount == 0 && sideGoodAmount > 0) {
+		side = 1;
+	}
+
+	if (this.captured && (side === this.side || side === 0)) {
+		this.captureShieldPercentInc(this.captureShieldPercentChange, this.side);
+	}
+
+	if (side === 0) {
+		if (this.captured === false && containsObjects === false) {
+			this.capturePercentDec(this.capturePercentChange/2);
+			this.sidePercentDec(this.sidePercentChange/2);
+		}
+	}
+	else {
+		if (this.captureShieldPercent <= 0.0) {
+			this.capturePercentInc(this.capturePercentChange);
+			this.sidePercentInc(this.sidePercentChange, side);
+		}
+
+		if (side !== this.side) {
+			this.captureShieldPercentDec(this.captureShieldPercentChange);
+		}
+	}
 };
 
 
@@ -40,24 +106,27 @@ CollectableCircleCage.prototype.draw = function() {
 	this.xReal = this.x-g_g.camera.x;
 	this.yReal = this.y-g_g.camera.y;
 
-	if (this.xReal+this.wHalf+10 > 0 &&
-		this.xReal-this.wHalf-10 <= g_g.canvasW &&
-		this.yReal+this.hHalf+10 > 0 &&
-		this.yReal-this.hHalf-10 <= g_g.canvasH) {
+	if (this.xReal+this.captureRadius+10 > 0 &&
+		this.xReal-this.captureRadius-10 <= g_g.canvasW &&
+		this.yReal+this.captureRadius+10 > 0 &&
+		this.yReal-this.captureRadius-10 <= g_g.canvasH) {
 			this.drawAtPos(this.xReal, this.yReal);
 	}
 
 };
 
 CollectableCircleCage.prototype.drawAtPos = function(x, y) {
-	g_g.ctx.beginPath();
-	g_g.ctx.arc(x, y, this.circleRadius,
-		0, 2*Math.PI, false);
-
 	g_g.ctx.fillStyle = "#fff";
 	g_g.ctx.strokeStyle = "#fff";
-	g_g.ctx.fill();
-	g_g.ctx.stroke();
+
+	if (this.circleContained) {
+		g_g.ctx.beginPath();
+		g_g.ctx.arc(x, y, this.circleRadius,
+			0, 2*Math.PI, false);
+
+		g_g.ctx.fill();
+		g_g.ctx.stroke();
+	}
 
 	var perc = 0.6;
 
@@ -97,13 +166,22 @@ CollectableCircleCage.prototype.drawAtPos = function(x, y) {
 	g_g.ctx.strokeStyle = "#fff";
 	g_g.ctx.stroke();
 
+	g_g.ctx.beginPath();
+	g_g.ctx.arc(x, y, this.captureRadius,
+		0.5*Math.PI, 0.5*Math.PI+this.captureShieldPercent*2*Math.PI, false);
+
+	if (this.side === 1)
+		g_g.ctx.strokeStyle = "#0f0";
+	else if (this.side === 2)
+		g_g.ctx.strokeStyle = "#f00";
+
+	g_g.ctx.stroke();
+
 
 	g_g.ctx.beginPath();
-	g_g.ctx.arc(x, y, this.circleRadius,
+	g_g.ctx.arc(x, y, this.circleRadius*2+20,
 		0.5*Math.PI, 0.5*Math.PI+this.sidePercent*2*Math.PI, false);
 
-	if (this.sideDisplay === 1)
-		g_g.ctx.strokeStyle = "#0f0";
 	g_g.ctx.stroke();
 
 	g_g.ctx.lineWidth = 1.0;
@@ -138,11 +216,24 @@ CollectableCircleCage.prototype.capturePercentDec = function(value) {
 
 
 CollectableCircleCage.prototype.sidePercentInc = function(value, toSide) {
-	this.sidePercent += value;
-	if (this.sidePercent > 1.0) {
-		this.sidePercent = 1.0;
-		this.side = toSide;
+
+	if (this.side !== 0 && this.side !== toSide) {
+		this.sidePercent -= value;
+		if (this.sidePercent < 0) {
+			this.sidePercent = -this.sidePercent;
+			this.side = toSide;
+		}
 	}
+
+	else {
+		this.side = toSide;
+		this.sidePercent += value;
+		if (this.sidePercent >= 1.0) {
+			this.sidePercent = 1.0;
+		}
+	}
+
+	console.log(this.side);
 };
 
 CollectableCircleCage.prototype.sidePercentDec = function(value) {
@@ -150,6 +241,30 @@ CollectableCircleCage.prototype.sidePercentDec = function(value) {
 	if (this.sidePercent < 0)
 		this.sidePercent = 0;
 };
+
+
+
+CollectableCircleCage.prototype.captureShieldPercentInc = function(value, side) {
+	this.captureShieldPercent += value;
+	if (this.captureShieldPercent >= 1.0) {
+		this.captureShieldPercent = 1.0;
+	}
+}
+
+CollectableCircleCage.prototype.captureShieldPercentDec = function(value) {
+	this.captureShieldPercent -= value;
+	if (this.captureShieldPercent <= 0.0) {
+		this.captureShieldPercent = 0.0;
+	}
+}
+
+
+
+
+
+
+
+
 
 
 
