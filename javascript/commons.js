@@ -35,10 +35,10 @@ g_g.mouse = {};							// mouse location and buttons
 g_g.keys = {};							// keys press, down, and release
 g_g.keyMap = {};						// converts english into array indexes
 
-
 // reset()
-g_g.camera = {};						// data for the single Camera() instance
+g_g.worldRadius;
 
+g_g.camera = {};						// data for the single Camera() instance
 g_g.player = {};
 
 g_g.collectableCircleCages = [];

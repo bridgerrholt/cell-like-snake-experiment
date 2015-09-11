@@ -137,6 +137,12 @@ Circle.prototype.move = function() {
 	else {
 		this.speedDec(this.speedAcc);
 	}
+
+	if (pointDis(0, 0, this.x, this.y) > g_g.worldRadius-this.r) {
+		var pos = disDirToPoint(0, 0, g_g.worldRadius-this.r, this.x, this.y);
+		this.x = pos.x;
+		this.y = pos.y;
+	}
 };
 
 Circle.prototype.draw = function() {

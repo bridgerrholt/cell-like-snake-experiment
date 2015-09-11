@@ -40,6 +40,16 @@ draw = function() {
 	}
 	
 	g_g.ctx.restore();
+
+	g_g.ctx.beginPath();
+	g_g.ctx.arc(-g_g.camera.x, -g_g.camera.y, g_g.worldRadius,
+		0, 2*Math.PI, false);
+	g_g.ctx.strokeStyle = "#fff";
+	g_g.ctx.lineWidth = 5.0;
+	g_g.ctx.stroke();
+	g_g.ctx.lineWidth = 1.0;
+
+
 	for (var i = 0; i < g_g.collectableCircleCages.length; i++) {
 		g_g.collectableCircleCages[i].draw();
 	}
