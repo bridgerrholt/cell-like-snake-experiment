@@ -5,7 +5,7 @@
 Player = function(x, y) {
 	this.circles = [];
 	this.circleTotalCount = 0;
-	for (var i = 0; i < 1; i += 1) {
+	for (var i = 0; i < 10; i += 1) {
 		this.createCircle();
 	}
 	this.x = x;
@@ -57,7 +57,7 @@ Player.prototype.createCircle = function() {
 
 		var pos = disDir(this.circles[index-1].x,
 			this.circles[index-1].y,
-			cirR+this.circles[index-1].r+5, dir);
+			cirR+this.circles[index-1].radius+5, dir);
 		cirX = pos.x;
 		cirY = pos.y;
 	}
@@ -67,6 +67,8 @@ Player.prototype.createCircle = function() {
 		8 - this.circles.length*0.2,
 		cirX, cirY));
 	++this.circleTotalCount;
+
+	console.log(this.circles);
 };
 
 

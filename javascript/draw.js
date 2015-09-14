@@ -63,6 +63,11 @@ draw = function() {
 	// draw end
 	g_g.camera.draw();
 
+	if (g_g.player.circles.length < 2)
+		secondSpeed = "none";
+	else
+		secondSpeed = String(g_g.player.circles[1].speed);
+
 	g_g.ctx.textAlign = "left";
 	if (g_g.debugText) {
 		drawText(g_g.ctx, [
@@ -71,7 +76,8 @@ draw = function() {
 			"Player: " + String(roundFloat(g_g.player.x, 1)) + ", " + String(roundFloat(g_g.player.y, 1)),
 			"Mouse: " + String(g_g.mouse.x) + ", " + String(g_g.mouse.y),
 			"Wheel: " + String(g_g.mouse.wheel.deltaX) + ", " + String(g_g.mouse.wheel.deltaY),
-			"Dir from center: " + String(pointDir(g_g.canvasW/2, g_g.canvasH/2, g_g.mouse.x, g_g.mouse.y))
+			"Dir from center: " + String(pointDir(g_g.canvasW/2, g_g.canvasH/2, g_g.mouse.x, g_g.mouse.y)),
+			"Second speed: " + secondSpeed
 		], "#f00", 16, "times", 0, 0);
 	}
 
