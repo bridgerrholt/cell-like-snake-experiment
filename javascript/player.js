@@ -5,21 +5,33 @@
 Player = function(x, y) {
 	this.circles = [];
 	this.circleTotalCount = 0;
-	for (var i = 0; i < 1; ++i) {
+	for (var i = 0; i < 1; i += 1) {
 		this.createCircle();
 	}
 	this.x = x;
 	this.y = y;
 };
 
+
+
 Player.prototype.update = function() {
-	for (var i = 0; i < this.circles.length; i++) {
+	for (var i = 0; i < this.circles.length; i += 1) {
 		this.circles[i].update();
 	}
 
 	this.x = this.circles[0].x;
 	this.y = this.circles[0].y;
 };
+
+
+
+Player.prototype.draw = function() {
+	for (var i = 0; i < this.circles.length; i += 1) {
+		this.circles[i].draw();
+	}
+};
+
+
 
 Player.prototype.createCircle = function() {
 	var cirX, cirY;
@@ -57,15 +69,11 @@ Player.prototype.createCircle = function() {
 	++this.circleTotalCount;
 };
 
+
+
 Player.prototype.addCircle = function(x, y, rStart) {
 	this.circles.push(new Circle(this.circles, this.circleTotalCount,
 		this.circles.length, rStart, 35-this.circles.length,
 		8 - this.circles.length*0.2, x, y));
 	++this.circleTotalCount;
-};
-
-Player.prototype.draw = function() {
-	for (var i = 0; i < this.circles.length; ++i) {
-		this.circles[i].draw();
-	}
 };
