@@ -75,7 +75,8 @@ Circle.prototype.move = function() {
 					this.moving = false;
 				setDis = true;
 
-			} else {
+			}
+			else {
 				var pos = disDirToPoint(this.x, this.y, this.speed,
 					this.parentArray[this.index-1].x,
 					this.parentArray[this.index-1].y);
@@ -105,7 +106,8 @@ Circle.prototype.move = function() {
 		}
 
 		else {
-			if (disToTarget > radiuses+16+this.speed) 
+			//if (disToTarget > radiuses+16+this.speed) 
+			if (disToTarget > extraDis+this.speed)
 				this.moving = true;
 			if (disToTarget <= extraDis+this.speed) {
 				setDis = true;
