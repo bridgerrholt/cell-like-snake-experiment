@@ -8,6 +8,8 @@ reset = function() {
 	g_g.camera = new Camera(0, 0);
 	g_g.player = new Player(0, 0);
 
+	g_g.enemies.push(new Enemy(-300, 57));
+
 	for (var i = 0; i < 5; ++i) {
 		g_g.collectableCircleCages.push (
 			new CollectableCircleCage(g_g.collectableCircleCages.length,

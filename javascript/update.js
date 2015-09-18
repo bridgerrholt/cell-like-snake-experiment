@@ -13,6 +13,10 @@ update = function() {
 		var mouseRealY = g_g.mouse.y+g_g.camera.y;
 
 		g_g.player.update();
+		
+		for (var i = 0; i < g_g.enemies.length; i++) {
+			g_g.enemies[i].update();
+		}
 
 		g_g.camera.update();
 

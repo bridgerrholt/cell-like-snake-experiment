@@ -42,6 +42,7 @@ g_g.camera = {};						// data for the single Camera() instance
 g_g.player = {};
 
 g_g.collectableCircleCages = [];
+g_g.enemies = [];
 
 
 
@@ -53,6 +54,7 @@ function Circle(){}
 function Player(){}
 function CollectableCircle(){}
 function CollectableCircleCage(){}
+function Enemy(){}
 
 function RgbColor(){}
 

@@ -1,11 +1,11 @@
 /*
-	The main user-controlled object.
+	The main enemy object.
 */
 
-Player = function(x, y) {
+Enemy = function(x, y) {
 	this.circles = [];
 	this.circleTotalCount = 0;
-	for (var i = 0; i < 10; i += 1) {
+	for (var i = 0; i < 1; i += 1) {
 		this.createCircle();
 	}
 	this.x = x;
@@ -14,18 +14,50 @@ Player = function(x, y) {
 
 
 
-Player.prototype.update = function() {
+Enemy.prototype.update = function() {
 	for (var i = 0; i < this.circles.length; i += 1) {
 		this.circles[i].update();
 	}
 
+	this.move(this.circles[0]);
+
 	this.x = this.circles[0].x;
 	this.y = this.circles[0].y;
+	console.log(this.x);
 };
 
 
 
-Player.prototype.draw = function() {
+Enemy.prototype.move = function(circle) {
+	var cages = g_g.collectableCircleCages;
+	var i = 0;
+	var disLeast = pointDis(circle.x, circle.y, cages[i].x, cages[i].y);
+	var disLeastIndex = i;
+	var disLeastValid = !(circle.captured && circle.side === 2);
+	var dis;
+
+	for (i = 1; i < cages.length; ++i) {
+		if (!(circle.captured && circle.side === 2)) {
+			dis = pointDis(circle.x, circle.y, cages[i].x, cages[i].y);
+			if (dis < disLeast) {
+				disLeast = dis;
+				disLeastIndex = i;
+			}
+		}
+	}
+
+	var cage = cages[disLeastIndex];
+
+	speed = 4*g_g.delta;
+	if (disLeast < this.radius+cage.radius)
+		speed = 0*g_g.delta;
+	var pos = disDirToPoint(circle.x, circle.y, speed, cage.x, cage.y);
+
+};
+
+
+
+Enemy.prototype.draw = function() {
 	for (var i = 0; i < this.circles.length; i += 1) {
 		this.circles[i].draw();
 	}
@@ -33,16 +65,16 @@ Player.prototype.draw = function() {
 
 
 
-Player.prototype.createCircle = function() {
+Enemy.prototype.createCircle = function() {
 	var cirX, cirY;
 	var index = this.circles.length;
 	var cirR = 35-this.circles.length;
-	var mouseControlled = false;
+
 
 	if (index === 0) {
-		cirX = g_g.mouse.x + g_g.camera.x;
-		cirY = g_g.mouse.y + g_g.camera.y;
-		mouseControlled = true;
+		console.log(this.x);
+		cirX = this.x;
+		cirY = this.y;
 	}
 	else {
 		var dir;
@@ -66,7 +98,7 @@ Player.prototype.createCircle = function() {
 	this.circles.push(new Circle(this.circles, this.circleTotalCount,
 		this.circles.length, cirR, cirR,
 		8 - this.circles.length*0.2,
-		cirX, cirY, mouseControlled));
+		cirX, cirY, false));
 	++this.circleTotalCount;
 
 	console.log(this.circles);
@@ -74,13 +106,9 @@ Player.prototype.createCircle = function() {
 
 
 
-Player.prototype.addCircle = function(x, y, rStart) {
-	var mouseControlled = false;
-	if (this.circles.length === 0)
-		mouseControlled = true;
-
+Enemy.prototype.addCircle = function(x, y, rStart) {
 	this.circles.push(new Circle(this.circles, this.circleTotalCount,
 		this.circles.length, rStart, 35-this.circles.length,
-		8 - this.circles.length*0.2, x, y, mouseControlled));
+		8 - this.circles.length*0.2, x, y, false));
 	++this.circleTotalCount;
 };

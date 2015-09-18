@@ -18,7 +18,7 @@ CollectableCircleCage = function(id, x, y) {
 	this.circleRadius = this.wHalf-10;
 
 	this.capturePercent = 0.0;
-	this.capturePercentChange = 0.005;
+	this.capturePercentChange = 0.005*g_g.delta;
 	this.captureRadius = this.w*4;
 
 	this.sideCircleRadius = this.captureRadius*2+20;
@@ -31,10 +31,16 @@ CollectableCircleCage = function(id, x, y) {
 	this.captured = false;
 
 	this.captureShieldPercent = 0.0;
-	this.captureShieldPercentChange = 0.001;
+	this.captureShieldPercentChange = 0.001*g_g.delta;
+	this.captureShieldPercentDecrease = this.captureShieldPercentChange*4;
+	this.captureShieldPercentDecreaseFull = this.captureShieldPercentChange*2;
+	this.captureShieldFull = false;
 
 	this.circleContained = true;
 	this.sideReachedZero = false;
+
+	this.sideGoodObjects = [];
+	this.sideBadObjects = [];
 };
 
 CollectableCircleCage.prototype.update = function() {
@@ -51,10 +57,21 @@ CollectableCircleCage.prototype.update = function() {
 
 		if (this.circleContained) {
 			this.circleContained = false;
-			g_g.player.addCircle(this.x, this.y, this.circleRadius);
+			var objectsArray;
+			if (this.side === 1)
+				objectsArray = this.sideGoodObjects;
+			else if (this.side === 2)
+				objectsArray = this.sideBadObjects;
+
+			var randomIndex = randomRange(0, objectsArray.length);
+
+			objectsArray[randomIndex].addCircle(this.x, this.y, this.circleRadius);
 		}
 	}
 
+	if (this.captureShieldPercent >= 1.0) {
+		this.captureShieldFull = true;
+	}
 
 
 	var sideGoodAmount = 0;
@@ -62,9 +79,13 @@ CollectableCircleCage.prototype.update = function() {
 	var side = 0;
 	var containsObjects = false;
 
+	this.sideGoodObjects = [];
+	this.sideBadObjects = [];
+
 	if (pointDis(this.x, this.y, g_g.player.x, g_g.player.y) < this.captureRadius) {
 		sideGoodAmount++;
 		containsObjects = true;
+		this.sideGoodObjects.push(g_g.player);
 	}
 
 	if (g_g.keys.d[g_g.keyMap.t]) {				// Replace with checks to bad guys.
@@ -91,12 +112,16 @@ CollectableCircleCage.prototype.update = function() {
 	}
 	else {
 		if (this.captureShieldPercent <= 0.0) {
+			this.captureShieldFull = false;
 			this.capturePercentInc(this.capturePercentChange);
 			this.sidePercentInc(this.sidePercentChange, side);
 		}
 
 		if (side !== this.side) {
-			this.captureShieldPercentDec(this.captureShieldPercentChange);
+			if (this.captureShieldFull)
+				this.captureShieldPercentDec(this.captureShieldPercentDecreaseFull);
+			else
+				this.captureShieldPercentDec(this.captureShieldPercentDecrease);
 		}
 	}
 };

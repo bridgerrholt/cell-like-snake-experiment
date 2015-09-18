@@ -2,14 +2,14 @@
 	The basic object making up the player.
 */
 
-Circle = function(parentArray, id, index, radiusStart, radiusEnd, speedMax, x, y) {
+Circle = function(parentArray, id, index, radiusStart, radiusEnd, speedMax, x, y, mouseControlled) {
 						// The array containing this circle.
 	this.parentArray = parentArray;
 	this.id = id;		// The unique number of this circle.
 	this.index = index;	// This circle's position in the parent array.
 	this.radius = radiusStart;
 	this.radiusEnd = radiusEnd;
-	this.radiusIncreaseAmount = 0.2;
+	this.radiusIncreaseAmount = 0.2*g_g.delta;
 
 	if (this.radius < 1)
 		this.radius = 1;
@@ -17,12 +17,14 @@ Circle = function(parentArray, id, index, radiusStart, radiusEnd, speedMax, x, y
 	this.moving = false;
 	this.speedMax = speedMax*g_g.delta;
 	this.speed = 0;
-	this.speedAcc = speedMax/60.0;
+	this.speedAcc = speedMax/60.0*g_g.delta;
 
 	this.dir = 0;
 
 	this.x = x;
 	this.y = y;
+
+	this.mouseControlled = mouseControlled;
 };
 
 Circle.prototype.update = function() {
@@ -39,7 +41,7 @@ Circle.prototype.move = function() {
 	var targetX, targetY, targetRadius;
 	var setDis = false;
 
-	if (this.index === 0) {
+	if (this.mouseControlled) {
 		targetX = g_g.mouse.x+g_g.camera.x;
 		targetY = g_g.mouse.y+g_g.camera.y;
 
@@ -59,7 +61,7 @@ Circle.prototype.move = function() {
 		this.y = pos.y;
 	}
 
-	else {
+	else if (this.index !== 0) {
 		//targetX = this.parentArray[this.index-1].x;
 		//targetY = this.parentArray[this.index-1].y;
 		targetRadius = this.parentArray[this.index-1].radius;
@@ -71,7 +73,7 @@ Circle.prototype.move = function() {
 		if (this.moving) {
 
 			if (disToTarget <= extraDis+this.speed) {
-				if (!this.parentArray[this.index-1].moving)
+				if (!this.parentArray[this.index-1].moving && this.parentArray[this.index-1].speed <= 0.0)
 					this.moving = false;
 				setDis = true;
 
@@ -105,7 +107,7 @@ Circle.prototype.move = function() {
 		}
 
 		else {
-			if (disToTarget > radiuses+16+this.speed) 
+			if (disToTarget > radiuses/*+16*/+this.speed) 
 				this.moving = true;
 			if (disToTarget <= extraDis+this.speed) {
 				setDis = true;
@@ -125,6 +127,7 @@ Circle.prototype.move = function() {
 			this.x, this.y);
 		this.x = pos.x;
 		this.y = pos.y;
+		//this.speedDec(this.speedAcc);
 	}
 
 	if (this.moving) {

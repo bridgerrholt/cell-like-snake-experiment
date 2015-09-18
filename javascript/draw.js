@@ -54,6 +54,10 @@ draw = function() {
 		g_g.collectableCircleCages[i].draw();
 	}
 
+	for (var i = 0; i < g_g.enemies.length; i++) {
+		g_g.enemies[i].draw();
+	}
+
 	g_g.player.draw();
 
 
