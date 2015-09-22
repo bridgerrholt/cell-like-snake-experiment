@@ -77,7 +77,8 @@ Circle.prototype.move = function() {
 					this.moving = false;
 				setDis = true;
 
-			} else {
+			}
+			else {
 				var pos = disDirToPoint(this.x, this.y, this.speed,
 					this.parentArray[this.index-1].x,
 					this.parentArray[this.index-1].y);
