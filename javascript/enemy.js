@@ -5,25 +5,30 @@
 Enemy = function(x, y) {
 	this.circles = [];
 	this.circleTotalCount = 0;
+	this.x = x;
+	this.y = y;
+
+	this.targetPos = {
+		x: this.x,
+		y: this.y
+	};
+
 	for (var i = 0; i < 1; i += 1) {
 		this.createCircle();
 	}
-	this.x = x;
-	this.y = y;
 };
 
 
 
 Enemy.prototype.update = function() {
-	for (var i = 0; i < this.circles.length; i += 1) {
+	this.move(this.circles[0]);
+
+	for (var i = 1; i < this.circles.length; i += 1) {
 		this.circles[i].update();
 	}
 
-	this.move(this.circles[0]);
-
 	this.x = this.circles[0].x;
 	this.y = this.circles[0].y;
-	console.log(this.x);
 };
 
 
@@ -33,13 +38,13 @@ Enemy.prototype.move = function(circle) {
 	var i = 0;
 	var disLeast = pointDis(circle.x, circle.y, cages[i].x, cages[i].y);
 	var disLeastIndex = i;
-	var disLeastValid = !(circle.captured && circle.side === 2);
+	var disLeastValid = !(cages[i].captured && cages[i].side === 2);
 	var dis;
 
-	for (i = 1; i < cages.length; ++i) {
-		if (!(circle.captured && circle.side === 2)) {
+	for (i = 1; i < cages.length; i += 1) {
+		if (!(cages[i].captured && cages[i].side === 2)) {
 			dis = pointDis(circle.x, circle.y, cages[i].x, cages[i].y);
-			if (dis < disLeast) {
+			if (dis < disLeast || !disLeastValid) {
 				disLeast = dis;
 				disLeastIndex = i;
 			}
@@ -48,10 +53,18 @@ Enemy.prototype.move = function(circle) {
 
 	var cage = cages[disLeastIndex];
 
-	speed = 4*g_g.delta;
-	if (disLeast < this.radius+cage.radius)
-		speed = 0*g_g.delta;
-	var pos = disDirToPoint(circle.x, circle.y, speed, cage.x, cage.y);
+	if (disLeast < cage.captureRadius)
+		circle.speedDec(circle.speedAcc);
+	else
+		circle.speedInc(circle.speedAcc);
+	var pos = disDirToPoint(circle.x, circle.y, circle.speed, cage.x, cage.y);
+	circle.x = pos.x;
+	circle.y = pos.y;
+
+	var dis = randomRange(cage.circleRadius, cage.captureRadius);
+	var dir = randomRange(0, 360);
+
+	console.log(disLeastIndex);
 
 };
 
@@ -75,6 +88,7 @@ Enemy.prototype.createCircle = function() {
 		console.log(this.x);
 		cirX = this.x;
 		cirY = this.y;
+		console.log(cirX);
 	}
 	else {
 		var dir;
@@ -95,11 +109,14 @@ Enemy.prototype.createCircle = function() {
 		cirY = pos.y;
 	}
 
-	this.circles.push(new Circle(this.circles, this.circleTotalCount,
+
+	this.addCircle(cirX, cirY, cirR);
+
+	/*this.circles.push(new Circle(this.circles, this.circleTotalCount,
 		this.circles.length, cirR, cirR,
 		8 - this.circles.length*0.2,
-		cirX, cirY, false));
-	++this.circleTotalCount;
+		cirX, cirY, false, new RgbColor(255, 0, 0), 2));
+	++this.circleTotalCount;*/
 
 	console.log(this.circles);
 };
@@ -107,8 +124,25 @@ Enemy.prototype.createCircle = function() {
 
 
 Enemy.prototype.addCircle = function(x, y, rStart) {
-	this.circles.push(new Circle(this.circles, this.circleTotalCount,
+	var cir = {
+		parentArray: this.circles,
+		id: this.circleTotalCount,
+		index: this.circles.length,
+		radiusStart: rStart,
+		mouseControlled: false,
+		targetPos: this.targetPos,
+		rgbColor: new RgbColor(255, 0, 0),
+		side: 2
+	};
+
+	this.circles.push(new Circle(cir, x, y, 35-this.circles.length, 8-this.circles.length*0.2));
+
+	/*this.circles.push(new Circle(this.circles, this.circleTotalCount,
 		this.circles.length, rStart, 35-this.circles.length,
-		8 - this.circles.length*0.2, x, y, false));
+		8 - this.circles.length*0.2, x, y, false, new RgbColor(255, 0, 0), 2));*/
 	++this.circleTotalCount;
 };
+
+
+
+

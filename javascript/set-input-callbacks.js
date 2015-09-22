@@ -9,6 +9,12 @@ setInputCallbacks = function() {
 		y: Math.floor(g_g.canvasH/2),
 		xReal: 0,
 		yReal: 0,
+
+		real: {
+			x: 0,
+			y: 0
+		},
+
 		used: false,				// A general check for if the mouse has been used on something already,
 									// resets when a mouse button is pressed or released.
 		usedQuick: false,			// Resets at the end of every update.
@@ -80,6 +86,8 @@ setInputCallbacks = function() {
 		var rect = g_g.canvas.getBoundingClientRect();
 		g_g.mouse.x = evt.clientX-rect.left;
 		g_g.mouse.y = evt.clientY-rect.top;
+		g_g.mouse.real.x = g_g.mouse.x+g_g.camera.x;
+		g_g.mouse.real.y = g_g.mouse.y+g_g.camera.y;
 		//var message = 'Mouse position: ' + g_g.mouse.x + ',' + g_g.mouse.y;
 		//console.log(message);
 	}, false);

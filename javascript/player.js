@@ -5,11 +5,12 @@
 Player = function(x, y) {
 	this.circles = [];
 	this.circleTotalCount = 0;
-	for (var i = 0; i < 10; i += 1) {
-		this.createCircle();
-	}
 	this.x = x;
 	this.y = y;
+
+	for (var i = 0; i < 1; i += 1) {
+		this.createCircle();
+	}
 };
 
 
@@ -63,11 +64,13 @@ Player.prototype.createCircle = function() {
 		cirY = pos.y;
 	}
 
-	this.circles.push(new Circle(this.circles, this.circleTotalCount,
+	this.addCircle(cirX, cirY, cirR);
+
+	/*this.circles.push(new Circle(this.circles, this.circleTotalCount,
 		this.circles.length, cirR, cirR,
 		8 - this.circles.length*0.2,
-		cirX, cirY, mouseControlled));
-	++this.circleTotalCount;
+		cirX, cirY, mouseControlled, new RgbColor(255, 255, 255), 1));
+	++this.circleTotalCount;*/
 
 	console.log(this.circles);
 };
@@ -79,8 +82,27 @@ Player.prototype.addCircle = function(x, y, rStart) {
 	if (this.circles.length === 0)
 		mouseControlled = true;
 
-	this.circles.push(new Circle(this.circles, this.circleTotalCount,
+	/*this.circles.push(new Circle(this.circles, this.circleTotalCount,
 		this.circles.length, rStart, 35-this.circles.length,
-		8 - this.circles.length*0.2, x, y, mouseControlled));
-	++this.circleTotalCount;
+		8 - this.circles.length*0.2, x, y, mouseControlled, new RgbColor(255, 255, 255), 1));
+	++this.circleTotalCount;*/
+
+
+	var cir = {
+		parentArray: this.circles,
+		id: this.circleTotalCount,
+		index: this.circles.length,
+		radiusStart: rStart,
+		mouseControlled: mouseControlled,
+		targetPos: g_g.mouse.real,
+		rgbColor: new RgbColor(255, 255, 255),
+		side: 1
+	};
+
+	this.circles.push(new Circle(cir, x, y, 35-this.circles.length, 8-this.circles.length*0.2));
+
+	/*this.circles.push(new Circle(this.circles, this.circleTotalCount,
+		this.circles.length, rStart, 35-this.circles.length,
+		8 - this.circles.length*0.2, x, y, false, new RgbColor(255, 0, 0), 2));*/
+	this.circleTotalCount += 1;
 };

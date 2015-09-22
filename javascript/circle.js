@@ -2,14 +2,17 @@
 	The basic object making up the player.
 */
 
-Circle = function(parentArray, id, index, radiusStart, radiusEnd, speedMax, x, y, mouseControlled) {
+Circle = function(cir, x, y, radiusEnd, speedMax) {
 						// The array containing this circle.
-	this.parentArray = parentArray;
-	this.id = id;		// The unique number of this circle.
-	this.index = index;	// This circle's position in the parent array.
-	this.radius = radiusStart;
+	this.parentArray = cir.parentArray;
+	this.id = cir.id;		// The unique number of this circle.
+	this.index = cir.index;	// This circle's position in the parent array.
+	this.radius = cir.radiusStart;
 	this.radiusEnd = radiusEnd;
 	this.radiusIncreaseAmount = 0.2*g_g.delta;
+
+	this.side = cir.side;
+	this.color = cir.rgbColor.rgb;
 
 	if (this.radius < 1)
 		this.radius = 1;
@@ -24,7 +27,9 @@ Circle = function(parentArray, id, index, radiusStart, radiusEnd, speedMax, x, y
 	this.x = x;
 	this.y = y;
 
-	this.mouseControlled = mouseControlled;
+	this.mouseControlled = cir.mouseControlled;
+	this.targetPos = cir.targetPos;
+
 };
 
 Circle.prototype.update = function() {
@@ -41,9 +46,9 @@ Circle.prototype.move = function() {
 	var targetX, targetY, targetRadius;
 	var setDis = false;
 
-	if (this.mouseControlled) {
-		targetX = g_g.mouse.x+g_g.camera.x;
-		targetY = g_g.mouse.y+g_g.camera.y;
+	if (this.index === 0 || this.mouseControlled) {
+		targetX = this.targetPos.x;
+		targetY = this.targetPos.y;
 
 		if (pointDis(this.x, this.y, targetX, targetY) <= this.radius+45) {
 			this.moving = false;
@@ -161,8 +166,8 @@ Circle.prototype.drawAtPos = function(x, y) {
 	g_g.ctx.arc(x-g_g.camera.x, y-g_g.camera.y, this.radius,
 		0, 2*Math.PI, false);
 
-	g_g.ctx.fillStyle = "#fff";
-	g_g.ctx.strokeStyle = "#fff";
+	g_g.ctx.fillStyle = this.color;
+	g_g.ctx.strokeStyle = this.color;
 	g_g.ctx.fill();
 	g_g.ctx.stroke();
 };

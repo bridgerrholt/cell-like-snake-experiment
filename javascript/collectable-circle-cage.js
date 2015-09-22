@@ -93,6 +93,14 @@ CollectableCircleCage.prototype.update = function() {
 		containsObjects = true;
 	}
 
+	for (var i = 0; i < g_g.enemies.length; i += 1) {
+		if (pointDis(this.x, this.y, g_g.enemies[i].x, g_g.enemies[i].y) < this.captureRadius) {
+			sideBadAmount += 1;
+			containsObjects = true;
+			this.sideBadObjects.push(g_g.enemies[i]);
+		}
+	}
+
 	if (sideGoodAmount == 0 && sideBadAmount > 0) {
 		side = 2;
 	}
@@ -108,6 +116,9 @@ CollectableCircleCage.prototype.update = function() {
 		if (this.captured === false && containsObjects === false) {
 			this.capturePercentDec(this.capturePercentChange/2);
 			this.sidePercentDec(this.sidePercentChange/2);
+		}
+		else {
+			this.capturePercentInc(this.capturePercentChange);
 		}
 	}
 	else {
@@ -258,7 +269,7 @@ CollectableCircleCage.prototype.sidePercentInc = function(value, toSide) {
 		}
 	}
 
-	console.log(this.side);
+	//console.log(this.side);
 };
 
 CollectableCircleCage.prototype.sidePercentDec = function(value) {
