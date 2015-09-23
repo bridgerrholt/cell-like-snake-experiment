@@ -2,17 +2,17 @@
 	The basic object making up the player.
 */
 
-Circle = function(cir, x, y, radiusEnd, speedMax) {
-						// The array containing this circle.
-	this.parentArray = cir.parentArray;
-	this.id = cir.id;		// The unique number of this circle.
-	this.index = cir.index;	// This circle's position in the parent array.
-	this.radius = cir.radiusStart;
+Circle = function(attributes, x, y, radiusEnd, speedMax) {
+									// The array containing this circle.
+	this.parentArray = attributes.parentArray;
+	this.id = attributes.id;		// The unique number of this circle.
+	this.index = attributes.index;	// This circle's position in the parent array.
+	this.radius = attributes.radiusStart;
 	this.radiusEnd = radiusEnd;
 	this.radiusIncreaseAmount = 0.2*g_g.delta;
 
-	this.side = cir.side;
-	this.color = cir.rgbColor.rgb;
+	this.side = attributes.side;
+	this.color = attributes.rgbColor.rgb;
 
 	if (this.radius < 1)
 		this.radius = 1;
@@ -27,8 +27,8 @@ Circle = function(cir, x, y, radiusEnd, speedMax) {
 	this.x = x;
 	this.y = y;
 
-	this.mouseControlled = cir.mouseControlled;
-	this.targetPos = cir.targetPos;
+	this.mouseControlled = attributes.mouseControlled;
+	this.targetPos = attributes.targetPos;
 
 };
 
@@ -39,6 +39,9 @@ Circle.prototype.update = function() {
 		this.radius += this.radiusIncreaseAmount;
 		if (this.radius > this.radiusEnd)
 			this.radius = this.radiusEnd;
+	}
+	else if (this.radius > this.radiusEnd) {
+		this.radius = this.radiusEnd;
 	}
 };
 

@@ -6,13 +6,10 @@ update = function() {
 	g_g.thisTick = new Date;
 	g_g.fps = 1000/(g_g.thisTick-g_g.lastTick);
 
-	if (g_g.imgs.loadedTotal >= g_g.imgs.loadedNeed) {			// if the images are loaded
-		
+	g_g.mouse.real.x = g_g.mouse.x+g_g.camera.x;
+	g_g.mouse.real.y = g_g.mouse.y+g_g.camera.y;
 
-		var mouseRealX = g_g.mouse.x+g_g.camera.x;
-		var mouseRealY = g_g.mouse.y+g_g.camera.y;
-		g_g.mouse.real.x = g_g.mouse.x+g_g.camera.x;
-		g_g.mouse.real.y = g_g.mouse.y+g_g.camera.y;
+	if (g_g.imgs.loadedTotal >= g_g.imgs.loadedNeed) {			// if the images are loaded
 
 		g_g.player.update();
 		
@@ -35,8 +32,6 @@ update = function() {
 		g_g.ctx.fillStyle = "#fff";
 		g_g.ctx.fillRect(0, 0, g_g.canvasW, g_g.canvasH);
 	}
-
-
 
 
 	g_g.mouse.buttons.lp = false;

@@ -14,11 +14,11 @@ Imgs = function() {
 
 Imgs.prototype.loadImage = function(src) {
 	//this.loaded.push(false);
-	++this.loadedNeed;
+	this.loadedNeed += 1;
 	var img = new Image();
 
 	img.onload = function() {
-		++g_g.imgs.loadedTotal;
+		g_g.imgs.loadedTotal += 1;
 	};
 
 	img.src = src;
