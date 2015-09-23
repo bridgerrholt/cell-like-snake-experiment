@@ -11,6 +11,8 @@ update = function() {
 
 		var mouseRealX = g_g.mouse.x+g_g.camera.x;
 		var mouseRealY = g_g.mouse.y+g_g.camera.y;
+		g_g.mouse.real.x = g_g.mouse.x+g_g.camera.x;
+		g_g.mouse.real.y = g_g.mouse.y+g_g.camera.y;
 
 		g_g.player.update();
 		
@@ -27,9 +29,6 @@ update = function() {
 
 		if (g_g.keys.r[g_g.keyMap.p])
 			g_g.debugText = !g_g.debugText;
-
-		if (g_g.keys.r[g_g.keyMap.q])
-			g_g.showWeights = !g_g.showWeights;
 
 		draw();
 	} else {													// if the images are not loaded
