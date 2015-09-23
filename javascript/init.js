@@ -25,7 +25,7 @@ init = function() {
 	g_g.guiCanvasH = g_g.guiCanvas.height;
 	$("#gui-canvas").css("z-index", 100);
 
-	var boundSize = 2500;
+	var boundSize = 2700;
 	g_g.bounds = {
 		xSmall: -boundSize,
 		ySmall: -boundSize,

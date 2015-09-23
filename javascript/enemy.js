@@ -16,6 +16,21 @@ Enemy = function(x, y) {
 	for (var i = 0; i < 1; i += 1) {
 		this.createCircle();
 	}
+
+	this.circleRadiusDecrease = 1;
+	this.nextCircleRadius =
+		35 - this.circles.length*this.circleRadiusDecrease;
+
+	this.cagesFound = [];
+	this.cagesFoundProperties = [];
+	this.dir = randomRange(0, 360);
+	if (randomRange(0, 2) === 0)
+		this.dirChangeSign = -1
+	else
+		this.dirChangeSign = 1
+	this.dirChangeLockedTimer = false;
+	this.behavior = 1;		// 1: searching for cages, 2: going after a cage
+	this.cageTarget = 0;
 };
 
 
@@ -35,36 +50,132 @@ Enemy.prototype.update = function() {
 
 Enemy.prototype.move = function(circle) {
 	var cages = g_g.collectableCircleCages;
-	var i = 0;
-	var disLeast = pointDis(circle.x, circle.y, cages[i].x, cages[i].y);
-	var disLeastIndex = i;
-	var disLeastValid = !(cages[i].captured && cages[i].side === 2);
-	var dis;
 
-	for (i = 1; i < cages.length; i += 1) {
-		if (!(cages[i].captured && cages[i].side === 2)) {
-			dis = pointDis(circle.x, circle.y, cages[i].x, cages[i].y);
-			if (dis < disLeast || !disLeastValid) {
-				disLeast = dis;
-				disLeastIndex = i;
+	if (this.behavior === 1) {
+		if (randomRange(0, 5) === 0) {
+
+			if (this.dirChangeLockedTimer === 0 && randomRange(0, 20) === 0) {
+				if (randomRange(0, 2) === 0)
+					this.dirChangeSign = -1
+				else
+					this.dirChangeSign = 1
+			}
+
+			this.dir += randomRange(0, 2*this.dirChangeSign);
+			if (pointDis(0, 0, circle.x, circle.y) > g_g.worldRadius-circle.radius-1000) {
+				if (randomRange(0, 1) === 0) {
+					this.dir += randomRange(0, 5*this.dirChangeSign);
+					this.dirChangeLockedTimer = 1;
+				}
 			}
 		}
+
+		circle.speedInc(circle.speedAcc);
+		var pos = disDir(circle.x, circle.y, circle.speed, this.dir);
+		circle.x = pos.x;
+		circle.y = pos.y;
+
+		for (var i = 0; i < cages.length; i += 1) {
+			if (pointDir(this.x, this.y, cages[i].x, cages[i].y) <= 1000) {
+				var alreadyFound = false;
+				var alreadyFoundIndex = 0;
+				for (var j = 0; j < this.cagesFound.length; j += 1) {
+					if (this.cagesFound[j].id === cages[i].id) {
+						alreadyFound = true;
+						alreadyFoundIndex = j;
+						break;
+					}
+				}
+
+				var properties = {
+					side: cages[i].side,
+					sidePercent: cages[i].sidePercent
+				};
+
+				if (!alreadyFound) {
+					this.cagesFound.push(cages[i]);
+					this.cagesFoundProperties.push(properties);
+				}
+				else {
+					this.cagesFoundProperties[alreadyFoundIndex] = properties;
+				}
+			}
+		}
+
+		var i = 0;
+		var disLeast = pointDis(circle.x, circle.y, this.cagesFound[i].x, this.cagesFound[i].y);
+		var disLeastIndex = i;
+		var disLeastValid = !(this.cagesFound[i].captured && this.cagesFound[i].side === 2);
+		var dis;
+
+		for (i = 1; i < this.cagesFound.length; i += 1) {
+			if (!(this.cagesFound[i].captured && this.cagesFound[i].side === 2)) {
+				dis = pointDis(circle.x, circle.y, this.cagesFound[i].x, this.cagesFound[i].y);
+				if (dis < disLeast || !disLeastValid) {
+					disLeast = dis;
+					disLeastIndex = i;
+				}
+			}
+		}
+
+		var cage = this.cagesFound[disLeastIndex];
+
+		this.cageTarget = cage;
+		this.behavior = 2;
+
+		if (this.dirChangeLockedTimer > 0)
+			this.dirChangeLockedTimer -= 1;
+
+	}
+	else if (this.behavior === 2) {
+
+		/*var i = 0;
+		var disLeast = pointDis(circle.x, circle.y, cages[i].x, cages[i].y);
+		var disLeastIndex = i;
+		var disLeastValid = !(cages[i].captured && cages[i].side === 2);
+		var dis;
+
+		for (i = 1; i < cages.length; i += 1) {
+			if (!(cages[i].captured && cages[i].side === 2)) {
+				dis = pointDis(circle.x, circle.y, cages[i].x, cages[i].y);
+				if (dis < disLeast || !disLeastValid) {
+					disLeast = dis;
+					disLeastIndex = i;
+				}
+			}
+		}*/
+
+		var cage = this.cageTarget;
+		var disLeast = pointDis(circle.x, circle.y, cage.x, cage.y);
+
+		if (disLeast < cage.captureRadius)
+			circle.speedDec(circle.speedAcc);
+		else
+			circle.speedInc(circle.speedAcc);
+		var pos = disDirToPoint(circle.x, circle.y, circle.speed, cage.x, cage.y);
+		circle.x = pos.x;
+		circle.y = pos.y;
+
+		var dis = randomRange(cage.circleRadius, cage.captureRadius);
+		var dir = randomRange(0, 360);
+		pos = disDir(cage.circleRadius, cage.captureRadius, dis, dir);
+		this.targetPos.x = pos.x;
+		this.targetPos.y = pos.y;
 	}
 
-	var cage = cages[disLeastIndex];
+	// REPETITIVE, CHANGE, ALREADY IN CIRCLE.JS
+	if (pointDis(0, 0, circle.x, circle.y) > g_g.worldRadius-circle.radius) {
+		var pos = disDirToPoint(0, 0, g_g.worldRadius-circle.radius, circle.x, circle.y);
+		circle.x = pos.x;
+		circle.y = pos.y;
 
-	if (disLeast < cage.captureRadius)
-		circle.speedDec(circle.speedAcc);
-	else
-		circle.speedInc(circle.speedAcc);
-	var pos = disDirToPoint(circle.x, circle.y, circle.speed, cage.x, cage.y);
-	circle.x = pos.x;
-	circle.y = pos.y;
+		this.dir = pointDir(circle.x, circle.y, 0, 0);
 
-	var dis = randomRange(cage.circleRadius, cage.captureRadius);
-	var dir = randomRange(0, 360);
-
-	console.log(disLeastIndex);
+		if (randomRange(0, 2) === 0)
+			this.dirChangeSign = -1
+		else
+			this.dirChangeSign = 1
+	}
 
 };
 
@@ -82,7 +193,6 @@ Enemy.prototype.createCircle = function() {
 	var cirX, cirY;
 	var index = this.circles.length;
 	var cirR = 35-this.circles.length;
-
 
 	if (index === 0) {
 		console.log(this.x);
@@ -111,14 +221,6 @@ Enemy.prototype.createCircle = function() {
 
 
 	this.addCircle(cirX, cirY, cirR);
-
-	/*this.circles.push(new Circle(this.circles, this.circleTotalCount,
-		this.circles.length, cirR, cirR,
-		8 - this.circles.length*0.2,
-		cirX, cirY, false, new RgbColor(255, 0, 0), 2));
-	++this.circleTotalCount;*/
-
-	console.log(this.circles);
 };
 
 
@@ -135,12 +237,9 @@ Enemy.prototype.addCircle = function(x, y, rStart) {
 		side: 2
 	};
 
-	this.circles.push(new Circle(cir, x, y, 35-this.circles.length, 8-this.circles.length*0.2));
-
-	/*this.circles.push(new Circle(this.circles, this.circleTotalCount,
-		this.circles.length, rStart, 35-this.circles.length,
-		8 - this.circles.length*0.2, x, y, false, new RgbColor(255, 0, 0), 2));*/
-	++this.circleTotalCount;
+	this.circles.push(new Circle(cir, x, y, this.nextCircleRadius, 8-this.circles.length*0.2));
+	this.circleTotalCount += 1;
+	this.nextCircleRadius -= this.circleRadiusDecrease;
 };
 
 

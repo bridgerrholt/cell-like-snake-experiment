@@ -8,7 +8,10 @@ reset = function() {
 	g_g.camera = new Camera(0, 0);
 	g_g.player = new Player(0, 0);
 
-	g_g.enemies.push(new Enemy(-300, 57));
+	var dis = randomRange(350, 400);
+	var dir = randomRange(0, 360);
+	var pos = disDir(0, 0, dis, dir);
+	g_g.enemies.push(new Enemy(pos.x, pos.y));
 
 	for (var i = 0; i < 5; ++i) {
 		g_g.collectableCircleCages.push (
@@ -28,6 +31,19 @@ reset = function() {
 			circleCage.y = pos.y;
 
 			var closeToAnother = false;
+
+			for (var j = 0; j < g_g.enemies.length; j += 1) {
+				var tooCloseDis = circleCage.captureRadius+g_g.enemies[j].circles[0].radius+100;
+
+				if (pointDis(circleCage.x, circleCage.y,
+					g_g.enemies[j].x,
+					g_g.enemies[j].y) < tooCloseDis) {
+						closeToAnother = true;
+						break;
+				}
+			}
+
+			if (!closeToAnother)
 			for (var j = 0; j < g_g.collectableCircleCages.length; ++j) {
 				if (j != i) {
 					var tooCloseDis = circleCage.captureRadius+g_g.collectableCircleCages[j].captureRadius+100;
