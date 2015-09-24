@@ -24,6 +24,7 @@ Enemy = function(x, y) {
 	this.cagesFound = [];
 	this.cagesFoundProperties = [];
 	this.dir = randomRange(0, 360);
+	this.goalDir = this.dir;
 	if (randomRange(0, 2) === 0)
 		this.dirChangeSign = -1
 	else
@@ -31,8 +32,28 @@ Enemy = function(x, y) {
 	this.dirChangeLockedTimer = false;
 	this.behavior = 1;		// 1: searching for cages, 2: going after a cage
 	this.cageTarget = 0;
+
+	this.touchQueue = [];
+
+	this.vision = 700;
 };
 
+Enemy.TouchObject = function(originX, originY, dis, dir) {
+	this.origin = {
+		x: originX,
+		y: originY
+	};
+
+	this.dis = dis;
+	this.dir = dir;
+	var dirChangeDistance = randomRangeFloat(1, 5);
+	this.dirChange = dirChangeDistance*360 / (2*Math.PI*this.dis);
+	if (randomRange(0, 2) === 0)
+		this.dirChange = -this.dirChange;
+
+	this.x = disDirX(originX, dis, dir);
+	this.y = disDirY(originY, dis, dir);
+};
 
 
 Enemy.prototype.update = function() {
@@ -53,8 +74,47 @@ Enemy.prototype.move = function(circle) {
 
 	//console.log(this.behavior);
 
+	for (var i = 0; i < this.cagesFound.length; i += 1) {
+		var cage = this.cagesFound[i];
+		var cageProperties = this.cagesFoundProperties[i];
+		cageProperties.ticksSinceSeen += 1;
+		if (cageProperties.ticksSinceSeen >= 40*g_g.frameRate) {
+			if (!cageProperties.inQueue) {
+				this.touchQueue.push(new Enemy.TouchObject (
+					cage.x, cage.y,
+					randomRange(cage.circleRadius, cage.sideCircleRadius-10),
+					randomRange(0, 360)
+				));
+				cageProperties.inQueue = true;
+			}
+		}
+	}
+
+	if (this.touchQueue.length > 0)
+		this.touchQueue[0].update();
+
 	if (this.behavior === 1) {
-		if (randomRange(0, 5) === 0) {
+
+		while (this.touchQueue.length < 3) {
+			var dis = randomRange(200, g_g.worldRadius-circle.radius-100);
+			var dir = randomRangeFloat(0, 360);
+			var pos = disDir(0, 0, dis, dir);
+
+			if (pointDis(this.x, this.y, pos.x, pos.y) > this.vision) {
+				this.touchQueue.push(new Enemy.TouchObject (
+					0, 0, dis, dir
+				));
+			}
+		}
+
+		var targetPos = {
+			x: this.touchQueue[0].x,
+			y: this.touchQueue[0].y
+		};
+
+		this.dir = pointDir(this.x, this.y, targetPos.x, targetPos.y);
+
+		/*if (randomRange(0, 5) === 0) {
 
 			if (this.dirChangeLockedTimer === 0 && randomRange(0, 20) === 0) {
 				if (randomRange(0, 2) === 0)
@@ -64,21 +124,25 @@ Enemy.prototype.move = function(circle) {
 			}
 
 			this.dir += randomRange(0, 2*this.dirChangeSign);
-			if (pointDis(0, 0, circle.x, circle.y) > g_g.worldRadius-circle.radius-1000) {
+			if (pointDis(0, 0, circle.x, circle.y) > g_g.worldRadius-circle.radius-500) {
 				if (randomRange(0, 1) === 0) {
 					this.dir += randomRange(0, 5*this.dirChangeSign);
 					this.dirChangeLockedTimer = 0;
 				}
 			}
-		}
+		}*/
 
 		circle.speedInc(circle.speedAcc);
 		var pos = disDir(circle.x, circle.y, circle.speed, this.dir);
 		circle.x = pos.x;
 		circle.y = pos.y;
 
+		if (pointDis(this.x, this.y, targetPos.x, targetPos.y) <= this.vision) {
+			this.touchQueue.splice(0, 1);
+		}
+
 		for (var i = 0; i < cages.length; i += 1) {
-			if (pointDis(this.x, this.y, cages[i].x, cages[i].y) <= 700) {
+			if (pointDis(this.x, this.y, cages[i].x, cages[i].y) <= this.vision) {
 				var alreadyFound = false;
 				var alreadyFoundIndex = 0;
 				for (var j = 0; j < this.cagesFound.length; j += 1) {
@@ -92,7 +156,9 @@ Enemy.prototype.move = function(circle) {
 				var properties = {
 					side: cages[i].side,
 					sidePercent: cages[i].sidePercent,
-					captured: cages[i].captured
+					captured: cages[i].captured,
+					ticksSinceSeen: 0,
+					inQueue: false
 				};
 
 				if (!alreadyFound) {
@@ -191,7 +257,6 @@ Enemy.prototype.move = function(circle) {
 };
 
 
-
 Enemy.prototype.draw = function() {
 	for (var i = 0; i < this.circles.length; i += 1) {
 		this.circles[i].draw();
@@ -254,5 +319,11 @@ Enemy.prototype.addCircle = function(x, y, rStart) {
 };
 
 
+Enemy.TouchObject.prototype.update = function() {
+	this.dir += this.dirChange;
+
+	this.x = disDirX(this.origin.x, this.dis, this.dir);
+	this.y = disDirY(this.origin.y, this.dis, this.dir);
+};
 
 

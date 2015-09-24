@@ -64,11 +64,14 @@ function RgbColor(){}
 function pointDir(){}
 function pointDis(){}
 function disDir(){}
+function disDirX(){}
+function disDirY(){}
 function disDirToPoint(){}
 function getIfLineIntersectingCircle(){}
 function getIfLineIntersectingLine(){}
 function roundFloat(){}
 function randomRange(){}
+function randomRangeFloat(){}
 
 function update(){}
 function setInputCallbacks(){}
