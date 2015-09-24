@@ -39,6 +39,7 @@ g_g.keyMap = {};						// converts english into array indexes
 g_g.worldRadius;
 
 g_g.camera = {};						// data for the single Camera() instance
+g_g.settings = {};
 g_g.player = {};
 
 g_g.collectableCircleCages = [];
@@ -48,6 +49,7 @@ g_g.enemies = [];
 
 // objects
 function Camera(){}
+function Settings(){}
 function Imgs(){}
 
 function Circle(){}

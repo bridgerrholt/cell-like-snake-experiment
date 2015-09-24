@@ -83,7 +83,7 @@ draw = function() {
 	}
 
 	g_g.ctx.textAlign = "left";
-	if (g_g.debugText) {
+	if (g_g.settings.debugText) {
 		drawText(g_g.ctx, [
 			"FPS: " + String(roundFloat(g_g.fps, 1)),
 			"Camera: " + String(roundFloat(g_g.camera.x, 1)) + ", " + String(roundFloat(g_g.camera.y, 1)),

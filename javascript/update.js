@@ -11,6 +11,8 @@ update = function() {
 
 	if (g_g.imgs.loadedTotal >= g_g.imgs.loadedNeed) {			// if the images are loaded
 
+		g_g.settings.update();
+
 		g_g.player.update();
 		
 		for (var i = 0; i < g_g.enemies.length; i++) {
@@ -22,10 +24,6 @@ update = function() {
 		for (var i = 0; i < g_g.collectableCircleCages.length; i++) {
 			g_g.collectableCircleCages[i].update();
 		}
-
-
-		if (g_g.keys.r[g_g.keyMap.p])
-			g_g.debugText = !g_g.debugText;
 
 		draw();
 	} else {													// if the images are not loaded

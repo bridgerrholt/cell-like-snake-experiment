@@ -51,7 +51,7 @@ Enemy.prototype.update = function() {
 Enemy.prototype.move = function(circle) {
 	var cages = g_g.collectableCircleCages;
 
-	console.log(this.behavior);
+	//console.log(this.behavior);
 
 	if (this.behavior === 1) {
 		if (randomRange(0, 5) === 0) {
@@ -67,7 +67,7 @@ Enemy.prototype.move = function(circle) {
 			if (pointDis(0, 0, circle.x, circle.y) > g_g.worldRadius-circle.radius-1000) {
 				if (randomRange(0, 1) === 0) {
 					this.dir += randomRange(0, 5*this.dirChangeSign);
-					this.dirChangeLockedTimer = 1;
+					this.dirChangeLockedTimer = 0;
 				}
 			}
 		}
@@ -78,7 +78,7 @@ Enemy.prototype.move = function(circle) {
 		circle.y = pos.y;
 
 		for (var i = 0; i < cages.length; i += 1) {
-			if (pointDis(this.x, this.y, cages[i].x, cages[i].y) <= 1000) {
+			if (pointDis(this.x, this.y, cages[i].x, cages[i].y) <= 700) {
 				var alreadyFound = false;
 				var alreadyFoundIndex = 0;
 				for (var j = 0; j < this.cagesFound.length; j += 1) {

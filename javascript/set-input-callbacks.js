@@ -69,6 +69,7 @@ setInputCallbacks = function() {
 		o: 79,
 		p: 80,
 		q: 81,
+		r: 82,
 		t: 84,
 		w: 87,
 		y: 89

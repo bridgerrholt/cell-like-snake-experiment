@@ -6,6 +6,7 @@ reset = function() {
 	g_g.worldRadius = 3000;
 
 	g_g.camera = new Camera(0, 0);
+	g_g.settings = new Settings();
 	g_g.player = new Player(0, 0);
 
 	var dis = randomRange(350, 400);
