@@ -8,6 +8,8 @@ Player = function(x, y) {
 	this.x = x;
 	this.y = y;
 
+	this.autoMove = true;
+
 	for (var i = 0; i < 1; i += 1) {
 		this.createCircle();
 	}
@@ -16,8 +18,18 @@ Player = function(x, y) {
 
 
 Player.prototype.update = function() {
+	if (g_g.keys.r[g_g.keyMap.e])
+		this.autoMove = !this.autoMove;
+
+	var moving = this.autoMove;
+
+	if (g_g.keys.d[g_g.keyMap.shift])
+		moving = !moving;
+
+	console.log(moving);
+
 	for (var i = 0; i < this.circles.length; i += 1) {
-		this.circles[i].update();
+		this.circles[i].update(moving);
 	}
 
 	this.x = this.circles[0].x;

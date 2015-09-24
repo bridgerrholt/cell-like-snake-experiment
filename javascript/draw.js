@@ -67,10 +67,20 @@ draw = function() {
 	// draw end
 	g_g.camera.draw();
 
-	if (g_g.player.circles.length < 2)
-		secondSpeed = "none";
-	else
-		secondSpeed = String(g_g.player.circles[1].speed);
+	var playerOwned = 0;
+	var enemyOwned = 0;
+	var notOwned = 0;
+	for (var i = 0; i < g_g.collectableCircleCages.length; i += 1) {
+		if (g_g.collectableCircleCages[i].captured) {
+			if (g_g.collectableCircleCages[i].side === 1)
+				playerOwned += 1;
+			else
+				enemyOwned += 1;
+		}
+		else {
+			notOwned += 1;
+		}
+	}
 
 	g_g.ctx.textAlign = "left";
 	if (g_g.debugText) {
@@ -79,9 +89,9 @@ draw = function() {
 			"Camera: " + String(roundFloat(g_g.camera.x, 1)) + ", " + String(roundFloat(g_g.camera.y, 1)),
 			"Player: " + String(roundFloat(g_g.player.x, 1)) + ", " + String(roundFloat(g_g.player.y, 1)),
 			"Mouse: " + String(g_g.mouse.x) + ", " + String(g_g.mouse.y),
-			"Wheel: " + String(g_g.mouse.wheel.deltaX) + ", " + String(g_g.mouse.wheel.deltaY),
-			"Dir from center: " + String(pointDir(g_g.canvasW/2, g_g.canvasH/2, g_g.mouse.x, g_g.mouse.y)),
-			"Second speed: " + secondSpeed
+			"Player:  " + String(playerOwned),
+			"Enemy:   " + String(enemyOwned),
+			"Neutral: " + String(notOwned)
 		], "#f00", 16, "times", 0, 0);
 	}
 

@@ -32,8 +32,8 @@ Circle = function(attributes, x, y, radiusEnd, speedMax) {
 
 };
 
-Circle.prototype.update = function() {
-	this.move();
+Circle.prototype.update = function(move) {
+	this.move(move);
 
 	if (this.radius < this.radiusEnd) {
 		this.radius += this.radiusIncreaseAmount;
@@ -45,7 +45,7 @@ Circle.prototype.update = function() {
 	}
 };
 
-Circle.prototype.move = function() {
+Circle.prototype.move = function(move) {
 	var targetX, targetY, targetRadius;
 	var setDis = false;
 
@@ -67,6 +67,9 @@ Circle.prototype.move = function() {
 			this.dir);
 		this.x = pos.x;
 		this.y = pos.y;
+
+		if (!move)
+			this.moving = false;
 	}
 
 	else if (this.index !== 0) {

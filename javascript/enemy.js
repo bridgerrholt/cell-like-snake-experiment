@@ -51,6 +51,8 @@ Enemy.prototype.update = function() {
 Enemy.prototype.move = function(circle) {
 	var cages = g_g.collectableCircleCages;
 
+	console.log(this.behavior);
+
 	if (this.behavior === 1) {
 		if (randomRange(0, 5) === 0) {
 
@@ -76,7 +78,7 @@ Enemy.prototype.move = function(circle) {
 		circle.y = pos.y;
 
 		for (var i = 0; i < cages.length; i += 1) {
-			if (pointDir(this.x, this.y, cages[i].x, cages[i].y) <= 1000) {
+			if (pointDis(this.x, this.y, cages[i].x, cages[i].y) <= 1000) {
 				var alreadyFound = false;
 				var alreadyFoundIndex = 0;
 				for (var j = 0; j < this.cagesFound.length; j += 1) {
@@ -89,7 +91,8 @@ Enemy.prototype.move = function(circle) {
 
 				var properties = {
 					side: cages[i].side,
-					sidePercent: cages[i].sidePercent
+					sidePercent: cages[i].sidePercent,
+					captured: cages[i].captured
 				};
 
 				if (!alreadyFound) {
@@ -102,26 +105,31 @@ Enemy.prototype.move = function(circle) {
 			}
 		}
 
-		var i = 0;
-		var disLeast = pointDis(circle.x, circle.y, this.cagesFound[i].x, this.cagesFound[i].y);
-		var disLeastIndex = i;
-		var disLeastValid = !(this.cagesFound[i].captured && this.cagesFound[i].side === 2);
-		var dis;
+		if (this.cagesFound.length > 0) {
+			var i = 0;
+			var disLeast = pointDis(circle.x, circle.y, this.cagesFound[i].x, this.cagesFound[i].y);
+			var disLeastIndex = i;
+			var disLeastValid = !(this.cagesFoundProperties[i].captured && this.cagesFoundProperties[i].side === 2);
+			var dis;
 
-		for (i = 1; i < this.cagesFound.length; i += 1) {
-			if (!(this.cagesFound[i].captured && this.cagesFound[i].side === 2)) {
-				dis = pointDis(circle.x, circle.y, this.cagesFound[i].x, this.cagesFound[i].y);
-				if (dis < disLeast || !disLeastValid) {
-					disLeast = dis;
-					disLeastIndex = i;
+			for (i = 1; i < this.cagesFound.length; i += 1) {
+				if (!(this.cagesFoundProperties[i].captured && this.cagesFoundProperties[i].side === 2)) {
+					dis = pointDis(circle.x, circle.y, this.cagesFound[i].x, this.cagesFound[i].y);
+					if (dis < disLeast || !disLeastValid) {
+						disLeast = dis;
+						disLeastIndex = i;
+						disLeastValid = true;
+					}
 				}
 			}
+
+			var cage = this.cagesFound[disLeastIndex];
+
+			if (disLeastValid) {
+				this.cageTarget = cage;
+				this.behavior = 2;
+			}
 		}
-
-		var cage = this.cagesFound[disLeastIndex];
-
-		this.cageTarget = cage;
-		this.behavior = 2;
 
 		if (this.dirChangeLockedTimer > 0)
 			this.dirChangeLockedTimer -= 1;
@@ -161,6 +169,9 @@ Enemy.prototype.move = function(circle) {
 		pos = disDir(cage.circleRadius, cage.captureRadius, dis, dir);
 		this.targetPos.x = pos.x;
 		this.targetPos.y = pos.y;
+
+		if (cage.captured && cage.side === 2)
+			this.behavior = 1;
 	}
 
 	// REPETITIVE, CHANGE, ALREADY IN CIRCLE.JS

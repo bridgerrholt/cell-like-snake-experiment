@@ -46,7 +46,7 @@ reset = function() {
 			if (!closeToAnother)
 			for (var j = 0; j < g_g.collectableCircleCages.length; ++j) {
 				if (j != i) {
-					var tooCloseDis = circleCage.captureRadius+g_g.collectableCircleCages[j].captureRadius+100;
+					var tooCloseDis = circleCage.captureRadius+g_g.collectableCircleCages[j].captureRadius+500;
 
 					if (pointDis(circleCage.x, circleCage.y,
 						g_g.collectableCircleCages[j].x,
