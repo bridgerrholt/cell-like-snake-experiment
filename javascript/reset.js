@@ -13,6 +13,10 @@ reset = function() {
 	var dir = randomRange(0, 360);
 	var pos = disDir(0, 0, dis, dir);
 	g_g.enemies.push(new Enemy(pos.x, pos.y));
+	var dis = randomRange(350, 400);
+	var dir = randomRange(0, 360);
+	var pos = disDir(0, 0, dis, dir);
+	g_g.enemies.push(new Enemy(pos.x, pos.y));
 
 	for (var i = 0; i < 5; ++i) {
 		g_g.collectableCircleCages.push (

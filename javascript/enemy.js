@@ -74,10 +74,13 @@ Enemy.prototype.move = function(circle) {
 
 	//console.log(this.behavior);
 
+	// Decide on if it should go back to a discovered cage or not.
 	for (var i = 0; i < this.cagesFound.length; i += 1) {
 		var cage = this.cagesFound[i];
 		var cageProperties = this.cagesFoundProperties[i];
 		cageProperties.ticksSinceSeen += 1;
+
+		// If it's been ~40 seconds.
 		if (cageProperties.ticksSinceSeen >= 40*g_g.frameRate) {
 			if (!cageProperties.inQueue) {
 				this.touchQueue.push(new Enemy.TouchObject (
@@ -101,9 +104,19 @@ Enemy.prototype.move = function(circle) {
 			var pos = disDir(0, 0, dis, dir);
 
 			if (pointDis(this.x, this.y, pos.x, pos.y) > this.vision) {
-				this.touchQueue.push(new Enemy.TouchObject (
-					0, 0, dis, dir
-				));
+				var noneClose = true;
+				for (var i = 0; i < this.touchQueue.length; i += 1) {
+					if (pointDis(pos.x, pos.y, this.touchQueue[i].x, this.touchQueue.y) < this.vision+200) {
+						noneClose = false;
+						break;
+					}
+				}
+
+				if (noneClose) {
+					this.touchQueue.push(new Enemy.TouchObject (
+						0, 0, dis, dir
+					));
+				}
 			}
 		}
 
